@@ -1,34 +1,245 @@
 #!/bin/bash
 
+# git-shield: Pre-commit hook to prevent secret tokens from being committed
+# Author: git-shield project
+
+set -e
+
 echo "🔒 git-shield: scanning for secrets..."
 
-FILES=$(git diff --cached --name-only --diff-filter=ACM)
+# Get list of staged files
+FILES=$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null || echo "")
 
+if [ -z "$FILES" ]; then
+    echo "✅ No files staged for commit."
+    exit 0
+fi
+
+# Enhanced secret patterns including AI credentials
 PATTERNS=(
-  "AKIA[0-9A-Z]{16}"
-  "ASIA[0-9A-Z]{16}"
-  "AIza[0-9A-Za-z-_]{35}"
-  "ghp_[A-Za-z0-9]{36}"
-  "-----BEGIN PRIVATE KEY-----"
-  "slack_token|xox[baprs]-[0-9a-zA-Z]+"
+    # AWS Access Keys
+    "AKIA[0-9A-Z]{16}"
+    "ASIA[0-9A-Z]{16}"
+    "AKIA[0-9A-Z]{20}"
+    "ASIA[0-9A-Z]{20}"
+    
+    # GitHub Personal Access Tokens
+    "ghp_[A-Za-z0-9]{36}"
+    "gho_[A-Za-z0-9]{36}"
+    "ghu_[A-Za-z0-9]{36}"
+    "ghs_[A-Za-z0-9]{36}"
+    "ghr_[A-Za-z0-9]{36}"
+    
+    # Google API Keys
+    "AIza[0-9A-Za-z-_]{35}"
+    "AIza[0-9A-Za-z-_]{39}"
+    
+    # Slack Tokens
+    "xox[baprs]-[0-9a-zA-Z]+"
+    "xoxb-[0-9a-zA-Z]+"
+    "xoxa-[0-9a-zA-Z]+"
+    "xoxp-[0-9a-zA-Z]+"
+    "xoxr-[0-9a-zA-Z]+"
+    "xoxs-[0-9a-zA-Z]+"
+    
+    # Private Keys
+    "-----BEGIN PRIVATE KEY-----"
+    "-----BEGIN RSA PRIVATE KEY-----"
+    "-----BEGIN DSA PRIVATE KEY-----"
+    "-----BEGIN EC PRIVATE KEY-----"
+    "-----BEGIN OPENSSH PRIVATE KEY-----"
+    
+    # Database URLs with passwords
+    "postgresql://[^:]+:[^@]+@"
+    "mysql://[^:]+:[^@]+@"
+    "mongodb://[^:]+:[^@]+@"
+    
+    # API Keys (generic patterns)
+    "api_key.*['\"][0-9a-zA-Z]{32,45}['\"]"
+    "apikey.*['\"][0-9a-zA-Z]{32,45}['\"]"
+    "secret.*['\"][0-9a-zA-Z]{32,45}['\"]"
+    
+    # AI Service Credentials
+    
+    # OpenAI API Keys
+    "sk-[a-zA-Z0-9]{48}"
+    "sk-proj-[a-zA-Z0-9]{48}"
+    "sk-or-[a-zA-Z0-9]{48}"
+    "sk-st-[a-zA-Z0-9]{48}"
+    "sk-[a-zA-Z0-9]{20,48}"
+    "openai_api_key.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "OPENAI_API_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
+    
+    # Anthropic API Keys
+    "sk-ant-[a-zA-Z0-9]{48}"
+    "sk-ant-api03-[a-zA-Z0-9]{48}"
+    "anthropic_api_key.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "ANTHROPIC_API_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
+    
+    # Google AI (Vertex AI, Gemini) API Keys
+    "AIza[0-9A-Za-z-_]{35,39}"
+    "google_ai_api_key.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "GOOGLE_AI_API_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "vertex_ai_api_key.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "VERTEX_AI_API_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "gemini_api_key.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "GEMINI_API_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
+    
+    # Azure OpenAI API Keys
+    "sk-[a-zA-Z0-9]{32}"
+    "azure_openai_api_key.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "AZURE_OPENAI_API_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "azure_cognitive_services_key.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "AZURE_COGNITIVE_SERVICES_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
+    
+    # AWS AI Services
+    "aws_access_key_id.*['\"][A-Z0-9]{20}['\"]"
+    "aws_secret_access_key.*['\"][A-Za-z0-9/+=]{40}['\"]"
+    "AWS_ACCESS_KEY_ID.*['\"][A-Z0-9]{20}['\"]"
+    "AWS_SECRET_ACCESS_KEY.*['\"][A-Za-z0-9/+=]{40}['\"]"
+    
+    # Hugging Face API Tokens
+    "hf_[a-zA-Z0-9]{39}"
+    "huggingface_token.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "HUGGINGFACE_TOKEN.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "huggingface_api_key.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "HUGGINGFACE_API_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
+    
+    # Cohere API Keys
+    "cohere_api_key.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "COHERE_API_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
+    
+    # Replicate API Keys
+    "r8_[a-zA-Z0-9]{37}"
+    "replicate_api_token.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "REPLICATE_API_TOKEN.*['\"][a-zA-Z0-9]{32,}['\"]"
+    
+    # Stability AI API Keys
+    "sk-[a-zA-Z0-9]{32}"
+    "stability_api_key.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "STABILITY_API_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
+    
+    # ElevenLabs API Keys
+    "elevenlabs_api_key.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "ELEVENLABS_API_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
+    
+    # AssemblyAI API Keys
+    "assemblyai_api_key.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "ASSEMBLYAI_API_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
+    
+    # Deepgram API Keys
+    "deepgram_api_key.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "DEEPGRAM_API_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
+    
+    # Pinecone API Keys
+    "pinecone_api_key.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "PINECONE_API_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
+    
+    # Weaviate API Keys
+    "weaviate_api_key.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "WEAVIATE_API_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
+    
+    # Qdrant API Keys
+    "qdrant_api_key.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "QDRANT_API_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
+    
+    # Chroma API Keys
+    "chroma_api_key.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "CHROMA_API_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
+    
+    # LangChain API Keys
+    "langchain_api_key.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "LANGCHAIN_API_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
+    
+    # LangSmith API Keys
+    "langsmith_api_key.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "LANGSMITH_API_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
+    
+    # Weights & Biases API Keys
+    "wandb_api_key.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "WANDB_API_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
+    
+    # MLflow Tracking URIs with credentials
+    "mlflow_tracking_uri.*['\"][^'\"]*://[^:]+:[^@]+@[^'\"]*['\"]"
+    "MLFLOW_TRACKING_URI.*['\"][^'\"]*://[^:]+:[^@]+@[^'\"]*['\"]"
+    
+    # TensorBoard credentials
+    "tensorboard.*['\"][^'\"]*://[^:]+:[^@]+@[^'\"]*['\"]"
+    "TENSORBOARD.*['\"][^'\"]*://[^:]+:[^@]+@[^'\"]*['\"]"
+    
+    # Jupyter tokens
+    "jupyter_token.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "JUPYTER_TOKEN.*['\"][a-zA-Z0-9]{32,}['\"]"
+    
+    # Streamlit secrets
+    "streamlit_secrets.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "STREAMLIT_SECRETS.*['\"][a-zA-Z0-9]{32,}['\"]"
+    
+    # Gradio API keys
+    "gradio_api_key.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "GRADIO_API_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
+    
+    # FastAPI API keys
+    "fastapi_api_key.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "FASTAPI_API_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
+    
+    # Flask secret keys
+    "flask_secret_key.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "FLASK_SECRET_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
+    
+    # Django secret keys
+    "django_secret_key.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "DJANGO_SECRET_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
+    
+    # Node.js JWT secrets
+    "jwt_secret.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "JWT_SECRET.*['\"][a-zA-Z0-9]{32,}['\"]"
+    
+    # Redis passwords
+    "redis_password.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "REDIS_PASSWORD.*['\"][a-zA-Z0-9]{32,}['\"]"
+    
+    # Elasticsearch credentials
+    "elasticsearch_password.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "ELASTICSEARCH_PASSWORD.*['\"][a-zA-Z0-9]{32,}['\"]"
 )
 
 found=0
+secrets_found=()
 
 for file in $FILES; do
-  if [[ -f $file ]]; then
-    for pattern in "${PATTERNS[@]}"; do
-      if grep -qE "$pattern" "$file"; then
-        echo "❌ Potential secret found in $file (pattern: $pattern)"
-        found=1
-      fi
-    done
-  fi
+    if [[ -f $file ]]; then
+        # Skip binary files
+        if file "$file" | grep -q "text"; then
+            for pattern in "${PATTERNS[@]}"; do
+                if grep -qE "$pattern" "$file" 2>/dev/null; then
+                    echo "❌ Potential secret found in $file (pattern: $pattern)"
+                    secrets_found+=("$file:$pattern")
+                    found=1
+                fi
+            done
+        fi
+    fi
 done
 
 if [ "$found" -eq 1 ]; then
-  echo "❌ Commit blocked by git-shield. Remove secrets before committing."
-  exit 1
+    echo ""
+    echo "🚨 SECURITY ALERT: Secrets detected in staged files!"
+    echo "Please remove the following secrets before committing:"
+    echo ""
+    for secret in "${secrets_found[@]}"; do
+        echo "  - $secret"
+    done
+    echo ""
+    echo "💡 Tips:"
+    echo "  - Use environment variables for secrets"
+    echo "  - Add secret files to .gitignore"
+    echo "  - Use .env files (and add .env to .gitignore)"
+    echo "  - Store AI credentials in secure credential managers"
+    echo "  - Use cloud-native secret management services"
+    echo ""
+    echo "❌ Commit blocked by git-shield."
+    exit 1
 else
-  echo "✅ No secrets found. Proceeding with commit."
+    echo "✅ No secrets found. Proceeding with commit."
 fi

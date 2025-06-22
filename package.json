@@ -1,0 +1,82 @@
+{
+  "name": "git-shield",
+  "version": "1.0.0",
+  "description": "A global Git hook to prevent secret tokens from being committed, with comprehensive AI credential detection",
+  "main": "hooks/pre-commit",
+  "scripts": {
+    "install": "bash install.sh",
+    "uninstall": "bash uninstall.sh",
+    "test": "bash test.sh"
+  },
+  "keywords": [
+    "git",
+    "hook",
+    "security",
+    "secrets",
+    "pre-commit",
+    "aws",
+    "github",
+    "slack",
+    "api-keys",
+    "private-keys",
+    "ai",
+    "machine-learning",
+    "openai",
+    "anthropic",
+    "google-ai",
+    "azure-ai",
+    "huggingface",
+    "ml",
+    "deep-learning",
+    "vector-database",
+    "pinecone",
+    "weaviate",
+    "qdrant",
+    "chroma",
+    "langchain",
+    "wandb",
+    "mlflow",
+    "tensorboard",
+    "jupyter",
+    "streamlit",
+    "gradio",
+    "fastapi",
+    "flask",
+    "django",
+    "jwt",
+    "redis",
+    "elasticsearch",
+    "postgresql",
+    "mysql",
+    "mongodb"
+  ],
+  "author": "anhducmata",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/anhducmata/git-shield.git"
+  },
+  "bugs": {
+    "url": "https://github.com/anhducmata/git-shield/issues"
+  },
+  "homepage": "https://github.com/anhducmata/git-shield#readme",
+  "engines": {
+    "node": ">=0.0.0"
+  },
+  "os": [
+    "linux",
+    "darwin",
+    "win32"
+  ],
+  "bin": {
+    "git-shield": "./install.sh"
+  },
+  "files": [
+    "hooks/",
+    "install.sh",
+    "uninstall.sh",
+    "test.sh",
+    "config.sh",
+    "README.md"
+  ]
+} 
