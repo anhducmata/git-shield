@@ -1,8 +1,96 @@
-# git-shield
+# git-shield 🛡️
+
+A Git hook system that prevents secret tokens from being committed to your repositories. Protects against accidentally committing API keys, passwords, and other sensitive information.
+
+## 🚀 Quick Install
+
+```bash
+curl -sSL https://raw.githubusercontent.com/anhducmata/git-shield/main/install.sh | bash
+```
+
+The enhanced installer now **automatically finds and protects existing repositories** in common locations!
+
+## 🔧 Installation Options
+
+### Option 1: Automatic Installation (Recommended)
+The install script now automatically:
+- ✅ Installs git-shield globally for new repositories
+- ✅ Scans common directories for existing repositories
+- ✅ Automatically protects found repositories
+- ✅ Provides interactive options for custom directories
+
+```bash
+curl -sSL https://raw.githubusercontent.com/anhducmata/git-shield/main/install.sh | bash
+```
+
+### Option 2: Manual Installation
+```bash
+git clone https://github.com/anhducmata/git-shield.git
+cd git-shield
+./install.sh
+```
+
+### Option 3: Protect Existing Repositories Later
+If you want to protect existing repositories after installation:
+
+```bash
+# Download and run the protection script
+curl -sSL https://raw.githubusercontent.com/anhducmata/git-shield/main/protect-existing-repos.sh | bash
+
+# Or with custom directories
+curl -sSL https://raw.githubusercontent.com/anhducmata/git-shield/main/protect-existing-repos.sh | bash -s -- ~/my-projects ~/work-repos
+
+# Or recursively scan a directory
+curl -sSL https://raw.githubusercontent.com/anhducmata/git-shield/main/protect-existing-repos.sh | bash -s -- -r ~/projects
+```
+
+## 🛡️ Protecting Existing Repositories
+
+### Automatic Protection
+The installer now automatically finds and protects repositories in these common locations:
+- `~/projects`, `~/Projects`
+- `~/code`, `~/Code`
+- `~/dev`, `~/Development`
+- `~/repos`, `~/git`
+- `~/workspace`
+- `~/Documents`, `~/Desktop`
+
+### Manual Protection Options
+
+#### Option A: One-liner for specific directory
+```bash
+find ~/projects -name ".git" -type d | while read d; do (cd "$(dirname "$d")" && git init); done
+```
+
+#### Option B: Protect all repositories on your system
+```bash
+find ~ -name ".git" -type d -maxdepth 4 | while read d; do (cd "$(dirname "$d")" && git init); done
+```
+
+#### Option C: Protect specific repository
+```bash
+cd /path/to/your/repo
+git init  # This applies the git-shield hook
+```
+
+#### Option D: Use the dedicated protection script
+```bash
+# Basic usage - scans common directories
+./protect-existing-repos.sh
+
+# Scan specific directories
+./protect-existing-repos.sh ~/projects ~/work-code
+
+# Recursive scan with custom depth
+./protect-existing-repos.sh -r -d 5 ~/projects
+
+# Get help
+./protect-existing-repos.sh --help
+```
+
+## ✨ Features
 
 🛡️ A simple global Git hook to block secret tokens from being committed (e.g., GitHub, AWS, Slack, AI services).
-
-## Features
 
 - **Global Installation**: Automatically applies to all new Git repositories
 - **Secret Detection**: Blocks common secret patterns including:
@@ -18,21 +106,17 @@
 - **Safe**: Only scans staged files, doesn't access your entire codebase
 - **Configurable**: Customize patterns and settings via `config.sh`
 
-## Installation
+## 🧪 Testing
 
-**Quick install:**
+Test your installation:
+
 ```bash
-curl -sSL https://raw.githubusercontent.com/anhducmata/git-shield/main/install.sh | bash
+bash test.sh
 ```
 
-**Manual install:**
-```bash
-git clone https://github.com/anhducmata/git-shield.git
-cd git-shield
-bash install.sh
-```
+This will verify that git-shield is properly installed and can detect secrets.
 
-## What It Blocks
+## 🔍 What Gets Detected
 
 ### Traditional Secrets
 - **AWS Access Keys**: `AKIA[0-9A-Z]{16}`, `ASIA[0-9A-Z]{16}`
@@ -81,15 +165,7 @@ bash install.sh
 - **Elasticsearch**: Password patterns
 - **PostgreSQL/MySQL/MongoDB**: URL patterns with credentials
 
-## How It Works
-
-1. **Pre-commit Hook**: Automatically runs before each commit
-2. **Pattern Matching**: Uses regex patterns to detect common secret formats
-3. **Staged Files Only**: Only scans files that are staged for commit
-4. **AI-Specific Scanning**: Enhanced detection for AI/ML files and directories
-5. **Blocking**: Prevents commit if secrets are found
-
-## Configuration
+## 🛠️ Configuration
 
 The hook is installed globally and will apply to all new Git repositories. To apply to existing repositories:
 
@@ -117,37 +193,20 @@ CUSTOM_PATTERNS=(
 )
 ```
 
-## Testing
+## 📋 Supported Patterns
 
-Test your installation:
+// ... existing code ...
 
-```bash
-bash test.sh
-```
-
-This will verify that git-shield is properly installed and can detect secrets.
-
-## Uninstall
+## 🚫 Uninstall
 
 ```bash
 bash uninstall.sh
 ```
 
-## AI Credential Security Best Practices
-
-When working with AI services:
-
-1. **Use Environment Variables**: Store credentials in `.env` files (add to `.gitignore`)
-2. **Cloud Secret Management**: Use AWS Secrets Manager, Azure Key Vault, or Google Secret Manager
-3. **Credential Rotation**: Regularly rotate API keys and tokens
-4. **Least Privilege**: Use API keys with minimal required permissions
-5. **Monitoring**: Set up alerts for credential usage and potential leaks
-6. **Development vs Production**: Use different credentials for different environments
-
-## Contributing
+## 🤝 Contributing
 
 Feel free to submit issues and enhancement requests!
 
-## License
+## 📄 License
 
 MIT License - feel free to use this project for your own needs.

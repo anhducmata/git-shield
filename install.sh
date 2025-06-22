@@ -78,22 +78,114 @@ rm -rf "$TEST_DIR"
 
 echo "✅ Installation verified! Secret detection is working correctly."
 
-# Only prompt if running interactively and ~/projects exists
-if [ -t 0 ] && [ -d "$HOME/projects" ]; then
-    read -p "Do you want to apply the hook to existing repos in ~/projects? (y/n): " yn
-    if [[ "$yn" =~ ^[Yy]$ ]]; then
-        find "$HOME/projects" -name ".git" -type d | while read d; do
-            (cd "$(dirname "$d")" && git init > /dev/null 2>&1)
-        done
-        echo "✅ Applied git-shield to existing repositories in ~/projects"
+# Auto-discover and protect existing repositories
+echo "🔍 Scanning for existing Git repositories..."
+
+# Common directories where Git repos are typically stored
+SEARCH_DIRS=(
+    "$HOME"
+    "$HOME/projects"
+    "$HOME/Projects"
+    "$HOME/code"
+    "$HOME/Code"
+    "$HOME/dev"
+    "$HOME/Development"
+    "$HOME/repos"
+    "$HOME/git"
+    "$HOME/workspace"
+    "$HOME/Documents"
+    "$HOME/Desktop"
+)
+
+repos_found=0
+repos_protected=0
+
+# Function to apply git-shield to a repository
+apply_git_shield() {
+    local repo_path="$1"
+    echo "  🛡️  Protecting: $repo_path"
+    (cd "$repo_path" && git init > /dev/null 2>&1)
+    if [ -f "$repo_path/.git/hooks/pre-commit" ]; then
+        repos_protected=$((repos_protected + 1))
+        return 0
+    else
+        return 1
     fi
-elif [ -d "$HOME/projects" ]; then
-    echo "💡 To apply git-shield to existing repos in ~/projects, run:"
-    echo "   find ~/projects -name '.git' -type d | while read d; do (cd \"\$(dirname \"\$d\")\" && git init); done"
+}
+
+# Search for Git repositories (limit depth to avoid going too deep)
+for search_dir in "${SEARCH_DIRS[@]}"; do
+    if [ -d "$search_dir" ]; then
+        echo "Scanning $search_dir..."
+        
+        # Find .git directories (max depth 3 to avoid performance issues)
+        while IFS= read -r -d '' git_dir; do
+            repo_dir=$(dirname "$git_dir")
+            
+            # Skip if it's the git-shield template directory
+            if [[ "$repo_dir" == *".git-shield-template"* ]]; then
+                continue
+            fi
+            
+            # Skip if it's a bare repository
+            if [[ "$git_dir" == *".git" ]] && [ -f "$git_dir/HEAD" ] && [ -d "$git_dir/objects" ]; then
+                repos_found=$((repos_found + 1))
+                
+                # Check if it already has the git-shield hook
+                if [ ! -f "$repo_dir/.git/hooks/pre-commit" ] || ! grep -q "git-shield" "$repo_dir/.git/hooks/pre-commit" 2>/dev/null; then
+                    apply_git_shield "$repo_dir"
+                else
+                    echo "  ✅ Already protected: $repo_dir"
+                    repos_protected=$((repos_protected + 1))
+                fi
+            fi
+        done < <(find "$search_dir" -maxdepth 3 -name ".git" -type d -print0 2>/dev/null)
+    fi
+done
+
+echo ""
+if [ "$repos_found" -gt 0 ]; then
+    echo "📊 Repository scan results:"
+    echo "   Found: $repos_found repositories"
+    echo "   Protected: $repos_protected repositories"
+    
+    if [ "$repos_protected" -eq "$repos_found" ]; then
+        echo "✅ All existing repositories are now protected by git-shield!"
+    else
+        echo "⚠️  Some repositories could not be automatically protected."
+        echo "   You can manually protect them by running 'git init' in each repository."
+    fi
+else
+    echo "ℹ️  No existing Git repositories found in common locations."
+fi
+
+# Interactive option for custom directories
+if [ -t 0 ]; then
+    echo ""
+    read -p "Do you have repositories in other directories you'd like to protect? (y/n): " custom_scan
+    if [[ "$custom_scan" =~ ^[Yy]$ ]]; then
+        read -p "Enter the directory path to scan: " custom_dir
+        if [ -d "$custom_dir" ]; then
+            echo "Scanning $custom_dir..."
+            while IFS= read -r -d '' git_dir; do
+                repo_dir=$(dirname "$git_dir")
+                if [[ "$git_dir" == *".git" ]] && [ -f "$git_dir/HEAD" ] && [ -d "$git_dir/objects" ]; then
+                    if [ ! -f "$repo_dir/.git/hooks/pre-commit" ] || ! grep -q "git-shield" "$repo_dir/.git/hooks/pre-commit" 2>/dev/null; then
+                        apply_git_shield "$repo_dir"
+                    else
+                        echo "  ✅ Already protected: $repo_dir"
+                    fi
+                fi
+            done < <(find "$custom_dir" -name ".git" -type d -print0 2>/dev/null)
+        else
+            echo "❌ Directory not found: $custom_dir"
+        fi
+    fi
 fi
 
 echo ""
 echo "🎉 git-shield is ready to protect your repositories!"
 echo ""
-echo "💡 For existing repositories, run 'git init' in each repo to apply the hook."
-echo "💡 To test in any repository, try committing a file with: OPENAI_API_KEY=sk-test123..."
+echo "💡 For any new repositories you create, git-shield will be applied automatically."
+echo "💡 To manually protect a specific repository, run 'git init' in that directory."
+echo "💡 To test protection, try committing a file with: OPENAI_API_KEY=sk-test123..."
