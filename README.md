@@ -1,8 +1,8 @@
-# git-shield 🛡️
+# git-shield
 
 A Git hook system that prevents secret tokens from being committed to your repositories. Protects against accidentally committing API keys, passwords, and other sensitive information.
 
-## 🚀 Quick Install Options
+## Quick Install
 
 Choose the installation method that fits your needs:
 
@@ -12,10 +12,10 @@ Automatically finds and protects existing repositories in common locations:
 curl -sSL https://raw.githubusercontent.com/anhducmata/git-shield/main/install.sh | bash
 ```
 **What this does:**
-- ✅ Installs git-shield globally for all new repositories
-- ✅ Automatically scans common directories (`~/projects`, `~/code`, `~/Documents`, etc.)
-- ✅ Automatically protects all found existing repositories
-- ✅ Provides interactive options for custom directories
+- Installs git-shield globally for all new repositories
+- Automatically scans common directories (`~/projects`, `~/code`, `~/Documents`, etc.)
+- Automatically protects all found existing repositories
+- Provides interactive options for custom directories
 
 ### Option B: Install for Future Repos Only
 Only installs git-shield for new repositories (doesn't touch existing ones):
@@ -23,11 +23,11 @@ Only installs git-shield for new repositories (doesn't touch existing ones):
 curl -sSL https://raw.githubusercontent.com/anhducmata/git-shield/main/install.sh | bash -s -- --future-only
 ```
 **What this does:**
-- ✅ Installs git-shield globally for all new repositories
-- ⏭️ Skips scanning and protecting existing repositories
-- 💡 You can protect existing repos later using the methods below
+- Installs git-shield globally for all new repositories
+- Skips scanning and protecting existing repositories
+- You can protect existing repos later using the methods below
 
-## 🔧 Advanced Installation Options
+## Advanced Installation Options
 
 ### Manual Installation
 ```bash
@@ -50,7 +50,7 @@ curl -sSL https://raw.githubusercontent.com/anhducmata/git-shield/main/protect-e
 curl -sSL https://raw.githubusercontent.com/anhducmata/git-shield/main/protect-existing-repos.sh | bash -s -- -r ~/projects
 ```
 
-## 🛡️ Protecting Existing Repositories
+## Protecting Existing Repositories
 
 ### Automatic Protection
 **Option A** automatically finds and protects repositories in these common locations:
@@ -94,9 +94,7 @@ git init  # This applies the git-shield hook
 ./protect-existing-repos.sh --help
 ```
 
-## ✨ Features
-
-🛡️ A simple global Git hook to block secret tokens from being committed (e.g., GitHub, AWS, Slack, AI services).
+## Features
 
 - **Global Installation**: Automatically applies to all new Git repositories
 - **Secret Detection**: Blocks common secret patterns including:
@@ -112,7 +110,7 @@ git init  # This applies the git-shield hook
 - **Safe**: Only scans staged files, doesn't access your entire codebase
 - **Configurable**: Customize patterns and settings via `config.sh`
 
-## 🧪 Testing
+## Testing
 
 Test your installation:
 
@@ -122,7 +120,7 @@ bash test.sh
 
 This will verify that git-shield is properly installed and can detect secrets.
 
-### Example: Secret Detected ❌
+### Example: Secret Detected
 
 When git-shield detects secrets in your staged files:
 
@@ -152,7 +150,7 @@ Please remove the following secrets before committing:
 ❌ Commit blocked by git-shield.
 ```
 
-### Example: No Secrets Detected ✅
+### Example: No Secrets Detected
 
 When your files are clean and safe to commit:
 
@@ -164,7 +162,7 @@ PS C:\Users\Mata\Desktop\git-shield> git commit -m "feat: add --future-only opti
  2 files changed, 66 insertions(+), 20 deletions(-)
 ```
 
-## 🔍 What Gets Detected
+## What Gets Detected
 
 ### Traditional Secrets
 - **AWS Access Keys**: `AKIA[0-9A-Z]{16}`, `ASIA[0-9A-Z]{16}`
@@ -213,7 +211,7 @@ PS C:\Users\Mata\Desktop\git-shield> git commit -m "feat: add --future-only opti
 - **Elasticsearch**: Password patterns
 - **PostgreSQL/MySQL/MongoDB**: URL patterns with credentials
 
-## 🛠️ Configuration
+## Configuration
 
 The hook is installed globally and will apply to all new Git repositories. To apply to existing repositories:
 
@@ -241,20 +239,16 @@ CUSTOM_PATTERNS=(
 )
 ```
 
-## 📋 Supported Patterns
-
-// ... existing code ...
-
-## 🚫 Uninstall
+## Uninstall
 
 ```bash
 bash uninstall.sh
 ```
 
-## 🤝 Contributing
+## Contributing
 
 Feel free to submit issues and enhancement requests!
 
-## 📄 License
+## License
 
 MIT License - feel free to use this project for your own needs.
