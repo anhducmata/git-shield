@@ -61,147 +61,144 @@ PATTERNS=(
     
     # AI Service Credentials
     
-    # OpenAI API Keys
-    "sk-[a-zA-Z0-9]{48}"
-    "sk-proj-[a-zA-Z0-9]{48}"
-    "sk-or-[a-zA-Z0-9]{48}"
-    "sk-st-[a-zA-Z0-9]{48}"
-    "sk-[a-zA-Z0-9]{20,48}"
-    "openai_api_key.*['\"][a-zA-Z0-9]{32,}['\"]"
-    "OPENAI_API_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
+    # OpenAI API Keys - More flexible patterns
+    "sk-[a-zA-Z0-9]{20,}"
+    "sk-proj-[a-zA-Z0-9]{20,}"
+    "sk-or-[a-zA-Z0-9]{20,}"
+    "sk-st-[a-zA-Z0-9]{20,}"
+    "openai_api_key.*[=:][^\\s\\n\\r]{20,}"
+    "OPENAI_API_KEY.*[=:][^\\s\\n\\r]{20,}"
     
     # Anthropic API Keys
-    "sk-ant-[a-zA-Z0-9]{48}"
-    "sk-ant-api03-[a-zA-Z0-9]{48}"
-    "anthropic_api_key.*['\"][a-zA-Z0-9]{32,}['\"]"
-    "ANTHROPIC_API_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "sk-ant-[a-zA-Z0-9]{20,}"
+    "sk-ant-api03-[a-zA-Z0-9]{20,}"
+    "anthropic_api_key.*[=:][^\\s\\n\\r]{20,}"
+    "ANTHROPIC_API_KEY.*[=:][^\\s\\n\\r]{20,}"
     
     # Google AI (Vertex AI, Gemini) API Keys
     "AIza[0-9A-Za-z-_]{35,39}"
-    "google_ai_api_key.*['\"][a-zA-Z0-9]{32,}['\"]"
-    "GOOGLE_AI_API_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
-    "vertex_ai_api_key.*['\"][a-zA-Z0-9]{32,}['\"]"
-    "VERTEX_AI_API_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
-    "gemini_api_key.*['\"][a-zA-Z0-9]{32,}['\"]"
-    "GEMINI_API_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "google_ai_api_key.*[=:][^\\s\\n\\r]{20,}"
+    "GOOGLE_AI_API_KEY.*[=:][^\\s\\n\\r]{20,}"
+    "vertex_ai_api_key.*[=:][^\\s\\n\\r]{20,}"
+    "VERTEX_AI_API_KEY.*[=:][^\\s\\n\\r]{20,}"
+    "gemini_api_key.*[=:][^\\s\\n\\r]{20,}"
+    "GEMINI_API_KEY.*[=:][^\\s\\n\\r]{20,}"
     
     # Azure OpenAI API Keys
-    "sk-[a-zA-Z0-9]{32}"
-    "azure_openai_api_key.*['\"][a-zA-Z0-9]{32,}['\"]"
-    "AZURE_OPENAI_API_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
-    "azure_cognitive_services_key.*['\"][a-zA-Z0-9]{32,}['\"]"
-    "AZURE_COGNITIVE_SERVICES_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "azure_openai_api_key.*[=:][^\\s\\n\\r]{20,}"
+    "AZURE_OPENAI_API_KEY.*[=:][^\\s\\n\\r]{20,}"
+    "azure_cognitive_services_key.*[=:][^\\s\\n\\r]{20,}"
+    "AZURE_COGNITIVE_SERVICES_KEY.*[=:][^\\s\\n\\r]{20,}"
     
     # AWS AI Services
-    "aws_access_key_id.*['\"][A-Z0-9]{20}['\"]"
-    "aws_secret_access_key.*['\"][A-Za-z0-9/+=]{40}['\"]"
-    "AWS_ACCESS_KEY_ID.*['\"][A-Z0-9]{20}['\"]"
-    "AWS_SECRET_ACCESS_KEY.*['\"][A-Za-z0-9/+=]{40}['\"]"
+    "aws_access_key_id.*[=:][^\\s\\n\\r]{16,}"
+    "aws_secret_access_key.*[=:][^\\s\\n\\r]{28,}"
+    "AWS_ACCESS_KEY_ID.*[=:][^\\s\\n\\r]{16,}"
+    "AWS_SECRET_ACCESS_KEY.*[=:][^\\s\\n\\r]{28,}"
     
     # Hugging Face API Tokens
-    "hf_[a-zA-Z0-9]{39}"
-    "huggingface_token.*['\"][a-zA-Z0-9]{32,}['\"]"
-    "HUGGINGFACE_TOKEN.*['\"][a-zA-Z0-9]{32,}['\"]"
-    "huggingface_api_key.*['\"][a-zA-Z0-9]{32,}['\"]"
-    "HUGGINGFACE_API_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "hf_[a-zA-Z0-9]{20,}"
+    "huggingface_token.*[=:][^\\s\\n\\r]{20,}"
+    "HUGGINGFACE_TOKEN.*[=:][^\\s\\n\\r]{20,}"
+    "huggingface_api_key.*[=:][^\\s\\n\\r]{20,}"
+    "HUGGINGFACE_API_KEY.*[=:][^\\s\\n\\r]{20,}"
     
     # Cohere API Keys
-    "cohere_api_key.*['\"][a-zA-Z0-9]{32,}['\"]"
-    "COHERE_API_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "cohere_api_key.*[=:][^\\s\\n\\r]{20,}"
+    "COHERE_API_KEY.*[=:][^\\s\\n\\r]{20,}"
     
     # Replicate API Keys
-    "r8_[a-zA-Z0-9]{37}"
-    "replicate_api_token.*['\"][a-zA-Z0-9]{32,}['\"]"
-    "REPLICATE_API_TOKEN.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "r8_[a-zA-Z0-9]{30,}"
+    "replicate_api_token.*[=:][^\\s\\n\\r]{20,}"
+    "REPLICATE_API_TOKEN.*[=:][^\\s\\n\\r]{20,}"
     
     # Stability AI API Keys
-    "sk-[a-zA-Z0-9]{32}"
-    "stability_api_key.*['\"][a-zA-Z0-9]{32,}['\"]"
-    "STABILITY_API_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "stability_api_key.*[=:][^\\s\\n\\r]{20,}"
+    "STABILITY_API_KEY.*[=:][^\\s\\n\\r]{20,}"
     
     # ElevenLabs API Keys
-    "elevenlabs_api_key.*['\"][a-zA-Z0-9]{32,}['\"]"
-    "ELEVENLABS_API_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "elevenlabs_api_key.*[=:][^\\s\\n\\r]{20,}"
+    "ELEVENLABS_API_KEY.*[=:][^\\s\\n\\r]{20,}"
     
     # AssemblyAI API Keys
-    "assemblyai_api_key.*['\"][a-zA-Z0-9]{32,}['\"]"
-    "ASSEMBLYAI_API_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "assemblyai_api_key.*[=:][^\\s\\n\\r]{20,}"
+    "ASSEMBLYAI_API_KEY.*[=:][^\\s\\n\\r]{20,}"
     
     # Deepgram API Keys
-    "deepgram_api_key.*['\"][a-zA-Z0-9]{32,}['\"]"
-    "DEEPGRAM_API_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "deepgram_api_key.*[=:][^\\s\\n\\r]{20,}"
+    "DEEPGRAM_API_KEY.*[=:][^\\s\\n\\r]{20,}"
     
     # Pinecone API Keys
-    "pinecone_api_key.*['\"][a-zA-Z0-9]{32,}['\"]"
-    "PINECONE_API_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "pinecone_api_key.*[=:][^\\s\\n\\r]{20,}"
+    "PINECONE_API_KEY.*[=:][^\\s\\n\\r]{20,}"
     
     # Weaviate API Keys
-    "weaviate_api_key.*['\"][a-zA-Z0-9]{32,}['\"]"
-    "WEAVIATE_API_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "weaviate_api_key.*[=:][^\\s\\n\\r]{20,}"
+    "WEAVIATE_API_KEY.*[=:][^\\s\\n\\r]{20,}"
     
     # Qdrant API Keys
-    "qdrant_api_key.*['\"][a-zA-Z0-9]{32,}['\"]"
-    "QDRANT_API_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "qdrant_api_key.*[=:][^\\s\\n\\r]{20,}"
+    "QDRANT_API_KEY.*[=:][^\\s\\n\\r]{20,}"
     
     # Chroma API Keys
-    "chroma_api_key.*['\"][a-zA-Z0-9]{32,}['\"]"
-    "CHROMA_API_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "chroma_api_key.*[=:][^\\s\\n\\r]{20,}"
+    "CHROMA_API_KEY.*[=:][^\\s\\n\\r]{20,}"
     
     # LangChain API Keys
-    "langchain_api_key.*['\"][a-zA-Z0-9]{32,}['\"]"
-    "LANGCHAIN_API_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "langchain_api_key.*[=:][^\\s\\n\\r]{20,}"
+    "LANGCHAIN_API_KEY.*[=:][^\\s\\n\\r]{20,}"
     
     # LangSmith API Keys
-    "langsmith_api_key.*['\"][a-zA-Z0-9]{32,}['\"]"
-    "LANGSMITH_API_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "langsmith_api_key.*[=:][^\\s\\n\\r]{20,}"
+    "LANGSMITH_API_KEY.*[=:][^\\s\\n\\r]{20,}"
     
     # Weights & Biases API Keys
-    "wandb_api_key.*['\"][a-zA-Z0-9]{32,}['\"]"
-    "WANDB_API_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "wandb_api_key.*[=:][^\\s\\n\\r]{20,}"
+    "WANDB_API_KEY.*[=:][^\\s\\n\\r]{20,}"
     
     # MLflow Tracking URIs with credentials
-    "mlflow_tracking_uri.*['\"][^'\"]*://[^:]+:[^@]+@[^'\"]*['\"]"
-    "MLFLOW_TRACKING_URI.*['\"][^'\"]*://[^:]+:[^@]+@[^'\"]*['\"]"
+    "mlflow_tracking_uri.*[=:][^\\s\\n\\r]*://[^:]+:[^@]+@[^\\s\\n\\r]*"
+    "MLFLOW_TRACKING_URI.*[=:][^\\s\\n\\r]*://[^:]+:[^@]+@[^\\s\\n\\r]*"
     
     # TensorBoard credentials
-    "tensorboard.*['\"][^'\"]*://[^:]+:[^@]+@[^'\"]*['\"]"
-    "TENSORBOARD.*['\"][^'\"]*://[^:]+:[^@]+@[^'\"]*['\"]"
+    "tensorboard.*[=:][^\\s\\n\\r]*://[^:]+:[^@]+@[^\\s\\n\\r]*"
+    "TENSORBOARD.*[=:][^\\s\\n\\r]*://[^:]+:[^@]+@[^\\s\\n\\r]*"
     
     # Jupyter tokens
-    "jupyter_token.*['\"][a-zA-Z0-9]{32,}['\"]"
-    "JUPYTER_TOKEN.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "jupyter_token.*[=:][^\\s\\n\\r]{20,}"
+    "JUPYTER_TOKEN.*[=:][^\\s\\n\\r]{20,}"
     
     # Streamlit secrets
-    "streamlit_secrets.*['\"][a-zA-Z0-9]{32,}['\"]"
-    "STREAMLIT_SECRETS.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "streamlit_secrets.*[=:][^\\s\\n\\r]{20,}"
+    "STREAMLIT_SECRETS.*[=:][^\\s\\n\\r]{20,}"
     
     # Gradio API keys
-    "gradio_api_key.*['\"][a-zA-Z0-9]{32,}['\"]"
-    "GRADIO_API_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "gradio_api_key.*[=:][^\\s\\n\\r]{20,}"
+    "GRADIO_API_KEY.*[=:][^\\s\\n\\r]{20,}"
     
     # FastAPI API keys
-    "fastapi_api_key.*['\"][a-zA-Z0-9]{32,}['\"]"
-    "FASTAPI_API_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "fastapi_api_key.*[=:][^\\s\\n\\r]{20,}"
+    "FASTAPI_API_KEY.*[=:][^\\s\\n\\r]{20,}"
     
     # Flask secret keys
-    "flask_secret_key.*['\"][a-zA-Z0-9]{32,}['\"]"
-    "FLASK_SECRET_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "flask_secret_key.*[=:][^\\s\\n\\r]{20,}"
+    "FLASK_SECRET_KEY.*[=:][^\\s\\n\\r]{20,}"
     
     # Django secret keys
-    "django_secret_key.*['\"][a-zA-Z0-9]{32,}['\"]"
-    "DJANGO_SECRET_KEY.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "django_secret_key.*[=:][^\\s\\n\\r]{20,}"
+    "DJANGO_SECRET_KEY.*[=:][^\\s\\n\\r]{20,}"
     
     # Node.js JWT secrets
-    "jwt_secret.*['\"][a-zA-Z0-9]{32,}['\"]"
-    "JWT_SECRET.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "jwt_secret.*[=:][^\\s\\n\\r]{20,}"
+    "JWT_SECRET.*[=:][^\\s\\n\\r]{20,}"
     
     # Redis passwords
-    "redis_password.*['\"][a-zA-Z0-9]{32,}['\"]"
-    "REDIS_PASSWORD.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "redis_password.*[=:][^\\s\\n\\r]{20,}"
+    "REDIS_PASSWORD.*[=:][^\\s\\n\\r]{20,}"
     
     # Elasticsearch credentials
-    "elasticsearch_password.*['\"][a-zA-Z0-9]{32,}['\"]"
-    "ELASTICSEARCH_PASSWORD.*['\"][a-zA-Z0-9]{32,}['\"]"
+    "elasticsearch_password.*[=:][^\\s\\n\\r]{20,}"
+    "ELASTICSEARCH_PASSWORD.*[=:][^\\s\\n\\r]{20,}"
 )
 
 found=0
@@ -209,15 +206,31 @@ secrets_found=()
 
 for file in $FILES; do
     if [[ -f $file ]]; then
-        # Skip binary files
-        if file "$file" | grep -q "text"; then
+        # Check if file is text and handle encoding issues
+        if file "$file" | grep -q "text\|ASCII\|UTF-8" || [[ $file =~ \.(txt|py|js|ts|json|yaml|yml|env|sh|bash|zsh|fish|ps1|bat|cmd|ini|cfg|conf|toml|md|rst|csv|log)$ ]]; then
+            
+            # Convert file to UTF-8 if needed (handles Windows encoding issues)
+            temp_file="/tmp/git-shield-temp-$$"
+            if command -v iconv >/dev/null 2>&1; then
+                # Try to convert from common Windows encodings to UTF-8
+                iconv -f UTF-16 -t UTF-8 "$file" 2>/dev/null > "$temp_file" || \
+                iconv -f UTF-16LE -t UTF-8 "$file" 2>/dev/null > "$temp_file" || \
+                iconv -f UTF-16BE -t UTF-8 "$file" 2>/dev/null > "$temp_file" || \
+                cp "$file" "$temp_file"
+            else
+                cp "$file" "$temp_file"
+            fi
+            
             for pattern in "${PATTERNS[@]}"; do
-                if grep -qE "$pattern" "$file" 2>/dev/null; then
+                if grep -qE "$pattern" "$temp_file" 2>/dev/null; then
                     echo "❌ Potential secret found in $file (pattern: $pattern)"
                     secrets_found+=("$file:$pattern")
                     found=1
                 fi
             done
+            
+            # Clean up temp file
+            rm -f "$temp_file"
         fi
     fi
 done

@@ -1,3 +1,8 @@
 # Ignore system files
 .DS_Store
 __pycache__/
+
+# Test files with secrets (for development)
+test_secret.txt
+*_secret.txt
+secret_test.*
