@@ -122,6 +122,48 @@ bash test.sh
 
 This will verify that git-shield is properly installed and can detect secrets.
 
+### Example: Secret Detected ❌
+
+When git-shield detects secrets in your staged files:
+
+```bash
+PS C:\Users\Mata\Desktop\git-shield> git commit -m "add file"
+🔒 git-shield: scanning for secrets...
+❌ Potential secret found in test_secret.txt (pattern: sk-[a-zA-Z0-9]{48})
+❌ Potential secret found in test_secret.txt (pattern: sk-[a-zA-Z0-9]{20,48})
+❌ Potential secret found in test_secret.txt (pattern: sk-[a-zA-Z0-9]{32})
+❌ Potential secret found in test_secret.txt (pattern: sk-[a-zA-Z0-9]{32})
+
+🚨 SECURITY ALERT: Secrets detected in staged files!
+Please remove the following secrets before committing:
+
+  - test_secret.txt:sk-[a-zA-Z0-9]{48}
+  - test_secret.txt:sk-[a-zA-Z0-9]{20,48}
+  - test_secret.txt:sk-[a-zA-Z0-9]{32}
+  - test_secret.txt:sk-[a-zA-Z0-9]{32}
+
+💡 Tips:
+  - Use environment variables for secrets
+  - Add secret files to .gitignore
+  - Use .env files (and add .env to .gitignore)
+  - Store AI credentials in secure credential managers
+  - Use cloud-native secret management services
+
+❌ Commit blocked by git-shield.
+```
+
+### Example: No Secrets Detected ✅
+
+When your files are clean and safe to commit:
+
+```bash
+PS C:\Users\Mata\Desktop\git-shield> git commit -m "feat: add --future-only option for install script"
+🔒 git-shield: scanning for secrets...
+✅ No secrets found. Proceeding with commit.
+[main c215fc0] feat: add --future-only option for install script
+ 2 files changed, 66 insertions(+), 20 deletions(-)
+```
+
 ## 🔍 What Gets Detected
 
 ### Traditional Secrets
