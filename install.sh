@@ -36,14 +36,24 @@ mkdir -p "$TEMPLATE_DIR/hooks"
 # Check if we're running from a cloned repo or via curl | bash
 if [ -f "hooks/pre-commit" ]; then
     # Running from cloned repository
-    cp hooks/pre-commit "$TEMPLATE_DIR/hooks/"
+    # Ensure Unix line endings for macOS/Linux compatibility
+    if command -v dos2unix >/dev/null 2>&1; then
+        # Use dos2unix if available
+        dos2unix -n "hooks/pre-commit" "$TEMPLATE_DIR/hooks/pre-commit"
+    elif command -v tr >/dev/null 2>&1; then
+        # Use tr to convert CRLF to LF
+        tr -d '\r' < "hooks/pre-commit" > "$TEMPLATE_DIR/hooks/pre-commit"
+    else
+        # Fallback: use sed to remove carriage returns
+        sed 's/\r$//' "hooks/pre-commit" > "$TEMPLATE_DIR/hooks/pre-commit"
+    fi
 else
     # Running via curl | bash - download from GitHub
     echo "Downloading pre-commit hook from GitHub..."
     if command -v curl >/dev/null 2>&1; then
-        curl -sSL https://raw.githubusercontent.com/anhducmata/git-shield/main/hooks/pre-commit -o "$TEMPLATE_DIR/hooks/pre-commit"
+        curl -sSL https://raw.githubusercontent.com/anhducmata/git-shield/main/hooks/pre-commit | tr -d '\r' > "$TEMPLATE_DIR/hooks/pre-commit"
     elif command -v wget >/dev/null 2>&1; then
-        wget -q https://raw.githubusercontent.com/anhducmata/git-shield/main/hooks/pre-commit -O "$TEMPLATE_DIR/hooks/pre-commit"
+        wget -q https://raw.githubusercontent.com/anhducmata/git-shield/main/hooks/pre-commit -O - | tr -d '\r' > "$TEMPLATE_DIR/hooks/pre-commit"
     else
         echo "❌ Error: Neither curl nor wget is available. Please install one of them or clone the repository manually."
         exit 1
@@ -51,6 +61,42 @@ else
 fi
 
 chmod +x "$TEMPLATE_DIR/hooks/pre-commit"
+
+# Verify the hook file is properly formatted for Unix systems
+if [ "$(uname)" = "Darwin" ] || [ "$(uname)" = "Linux" ]; then
+    # Check if file has proper Unix line endings
+    if command -v file >/dev/null 2>&1; then
+        FILE_TYPE=$(file "$TEMPLATE_DIR/hooks/pre-commit")
+        if echo "$FILE_TYPE" | grep -q "CRLF"; then
+            echo "⚠️  Converting Windows line endings to Unix format..."
+            if command -v dos2unix >/dev/null 2>&1; then
+                dos2unix "$TEMPLATE_DIR/hooks/pre-commit"
+            else
+                # Fallback: use sed or tr
+                if command -v tr >/dev/null 2>&1; then
+                    tr -d '\r' < "$TEMPLATE_DIR/hooks/pre-commit" > "$TEMPLATE_DIR/hooks/pre-commit.tmp"
+                    mv "$TEMPLATE_DIR/hooks/pre-commit.tmp" "$TEMPLATE_DIR/hooks/pre-commit"
+                else
+                    sed -i 's/\r$//' "$TEMPLATE_DIR/hooks/pre-commit"
+                fi
+                chmod +x "$TEMPLATE_DIR/hooks/pre-commit"
+            fi
+        fi
+    fi
+    
+    # Verify the shebang is correct
+    FIRST_LINE=$(head -n1 "$TEMPLATE_DIR/hooks/pre-commit")
+    if [[ "$FIRST_LINE" != "#!/bin/bash" ]]; then
+        echo "⚠️  Fixing shebang line for Unix compatibility..."
+        # Create a temporary file with correct shebang
+        {
+            echo "#!/bin/bash"
+            tail -n +2 "$TEMPLATE_DIR/hooks/pre-commit"
+        } > "$TEMPLATE_DIR/hooks/pre-commit.tmp"
+        mv "$TEMPLATE_DIR/hooks/pre-commit.tmp" "$TEMPLATE_DIR/hooks/pre-commit"
+        chmod +x "$TEMPLATE_DIR/hooks/pre-commit"
+    fi
+fi
 
 # Set global git template directory
 git config --global init.templateDir "$TEMPLATE_DIR"
@@ -89,7 +135,7 @@ fi
 
 # Test secret detection with a properly formatted file (ASCII encoding)
 echo "Testing secret detection..." > /dev/null
-printf "OPENAI_API_KEY=sk-1234567890abcdef1234567890abcdef1234567890abcdef\n" > secret_test.txt
+printf "OPENAI_API_KEY=test-key-1234567890abcdef1234567890abcdef1234567890abcdef\n" > secret_test.txt
 git add secret_test.txt
 
 # Test if the hook blocks the secret
@@ -114,7 +160,7 @@ if [ "$FUTURE_ONLY" = true ]; then
     echo "💡 git-shield will automatically protect all new repositories you create."
     echo "💡 To protect existing repositories later, run:"
     echo "   curl -sSL https://raw.githubusercontent.com/anhducmata/git-shield/main/protect-existing-repos.sh | bash"
-    echo "💡 To test protection, try committing a file with: OPENAI_API_KEY=sk-test123..."
+    echo "💡 To test protection, try committing a file with: OPENAI_API_KEY=test-key123..."
     exit 0
 fi
 
@@ -228,4 +274,4 @@ echo "🎉 git-shield is ready to protect your repositories!"
 echo ""
 echo "💡 For any new repositories you create, git-shield will be applied automatically."
 echo "💡 To manually protect a specific repository, run 'git init' in that directory."
-echo "💡 To test protection, try committing a file with: OPENAI_API_KEY=sk-test123..."
+echo "💡 To test protection, try committing a file with: OPENAI_API_KEY=test-key123..."

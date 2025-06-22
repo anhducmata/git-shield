@@ -245,6 +245,45 @@ CUSTOM_PATTERNS=(
 bash uninstall.sh
 ```
 
+## Troubleshooting
+
+### macOS Line Ending Issues ("text broken" error)
+
+If you encounter "text broken" errors or the pre-commit hook doesn't work properly on macOS, this is likely due to line ending compatibility issues between Windows and Unix systems.
+
+**Quick Fix:**
+```bash
+# Run the macOS line ending fix script
+curl -sSL https://raw.githubusercontent.com/anhducmata/git-shield/main/fix-macos-lineendings.sh | bash
+```
+
+**Manual Fix:**
+```bash
+# Check if line endings are the issue
+file ~/.git-shield-template/hooks/pre-commit
+
+# Fix line endings manually
+dos2unix ~/.git-shield-template/hooks/pre-commit
+# Or use tr if dos2unix is not available
+tr -d '\r' < ~/.git-shield-template/hooks/pre-commit > ~/.git-shield-template/hooks/pre-commit.tmp
+mv ~/.git-shield-template/hooks/pre-commit.tmp ~/.git-shield-template/hooks/pre-commit
+chmod +x ~/.git-shield-template/hooks/pre-commit
+```
+
+**Prevention:**
+The latest version of the install script automatically handles line ending conversion for macOS/Linux systems. If you're still experiencing issues:
+
+1. Make sure you're using the latest install script
+2. Try reinstalling: `curl -sSL https://raw.githubusercontent.com/anhducmata/git-shield/main/install.sh | bash`
+3. Run the fix script above
+4. If issues persist, please report them on GitHub
+
+**Common Symptoms:**
+- "text broken" error when viewing the pre-commit file
+- Pre-commit hook doesn't execute properly
+- Git shows the hook as non-executable
+- Strange characters visible when editing the hook file
+
 ## Contributing
 
 Feel free to submit issues and enhancement requests!
