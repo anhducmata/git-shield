@@ -2,36 +2,42 @@
 
 A Git hook system that prevents secret tokens from being committed to your repositories. Protects against accidentally committing API keys, passwords, and other sensitive information.
 
-## 🚀 Quick Install
+## 🚀 Quick Install Options
 
+Choose the installation method that fits your needs:
+
+### Option A: Install + Auto-Protect Existing Repos (Recommended)
+Automatically finds and protects existing repositories in common locations:
 ```bash
 curl -sSL https://raw.githubusercontent.com/anhducmata/git-shield/main/install.sh | bash
 ```
-
-The enhanced installer now **automatically finds and protects existing repositories** in common locations!
-
-## 🔧 Installation Options
-
-### Option 1: Automatic Installation (Recommended)
-The install script now automatically:
-- ✅ Installs git-shield globally for new repositories
-- ✅ Scans common directories for existing repositories
-- ✅ Automatically protects found repositories
+**What this does:**
+- ✅ Installs git-shield globally for all new repositories
+- ✅ Automatically scans common directories (`~/projects`, `~/code`, `~/Documents`, etc.)
+- ✅ Automatically protects all found existing repositories
 - ✅ Provides interactive options for custom directories
 
+### Option B: Install for Future Repos Only
+Only installs git-shield for new repositories (doesn't touch existing ones):
 ```bash
-curl -sSL https://raw.githubusercontent.com/anhducmata/git-shield/main/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/anhducmata/git-shield/main/install.sh | bash -s -- --future-only
 ```
+**What this does:**
+- ✅ Installs git-shield globally for all new repositories
+- ⏭️ Skips scanning and protecting existing repositories
+- 💡 You can protect existing repos later using the methods below
 
-### Option 2: Manual Installation
+## 🔧 Advanced Installation Options
+
+### Manual Installation
 ```bash
 git clone https://github.com/anhducmata/git-shield.git
 cd git-shield
 ./install.sh
 ```
 
-### Option 3: Protect Existing Repositories Later
-If you want to protect existing repositories after installation:
+### Protect Existing Repositories Later
+If you chose "future repos only" or want to protect additional repositories:
 
 ```bash
 # Download and run the protection script
@@ -47,7 +53,7 @@ curl -sSL https://raw.githubusercontent.com/anhducmata/git-shield/main/protect-e
 ## 🛡️ Protecting Existing Repositories
 
 ### Automatic Protection
-The installer now automatically finds and protects repositories in these common locations:
+**Option A** automatically finds and protects repositories in these common locations:
 - `~/projects`, `~/Projects`
 - `~/code`, `~/Code`
 - `~/dev`, `~/Development`
@@ -57,23 +63,23 @@ The installer now automatically finds and protects repositories in these common 
 
 ### Manual Protection Options
 
-#### Option A: One-liner for specific directory
+#### One-liner for specific directory
 ```bash
 find ~/projects -name ".git" -type d | while read d; do (cd "$(dirname "$d")" && git init); done
 ```
 
-#### Option B: Protect all repositories on your system
+#### Protect all repositories on your system
 ```bash
 find ~ -name ".git" -type d -maxdepth 4 | while read d; do (cd "$(dirname "$d")" && git init); done
 ```
 
-#### Option C: Protect specific repository
+#### Protect specific repository
 ```bash
 cd /path/to/your/repo
 git init  # This applies the git-shield hook
 ```
 
-#### Option D: Use the dedicated protection script
+#### Use the dedicated protection script
 ```bash
 # Basic usage - scans common directories
 ./protect-existing-repos.sh

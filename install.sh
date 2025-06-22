@@ -1,5 +1,33 @@
 #!/bin/bash
 
+# Parse command line arguments
+FUTURE_ONLY=false
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --future-only)
+            FUTURE_ONLY=true
+            shift
+            ;;
+        -h|--help)
+            echo "Usage: $0 [OPTIONS]"
+            echo ""
+            echo "Options:"
+            echo "  --future-only   Install git-shield for new repositories only (skip existing repos)"
+            echo "  -h, --help      Show this help message"
+            echo ""
+            echo "Examples:"
+            echo "  $0                    # Install and protect existing repositories"
+            echo "  $0 --future-only     # Install for future repositories only"
+            exit 0
+            ;;
+        *)
+            echo "Unknown option: $1"
+            echo "Use --help for usage information"
+            exit 1
+            ;;
+    esac
+done
+
 echo "📦 Installing git-shield global pre-commit hook..."
 
 TEMPLATE_DIR="$HOME/.git-shield-template"
@@ -77,6 +105,18 @@ cd /
 rm -rf "$TEST_DIR"
 
 echo "✅ Installation verified! Secret detection is working correctly."
+
+# Skip existing repository protection if --future-only flag is used
+if [ "$FUTURE_ONLY" = true ]; then
+    echo ""
+    echo "🎉 git-shield is ready to protect your repositories!"
+    echo ""
+    echo "💡 git-shield will automatically protect all new repositories you create."
+    echo "💡 To protect existing repositories later, run:"
+    echo "   curl -sSL https://raw.githubusercontent.com/anhducmata/git-shield/main/protect-existing-repos.sh | bash"
+    echo "💡 To test protection, try committing a file with: OPENAI_API_KEY=sk-test123..."
+    exit 0
+fi
 
 # Auto-discover and protect existing repositories
 echo "🔍 Scanning for existing Git repositories..."
