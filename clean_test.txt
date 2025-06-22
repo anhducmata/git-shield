@@ -1,4 +1,0 @@
-This is a clean file with no secrets.
-It should be allowed to commit.
-DATABASE_URL=postgresql://localhost:5432/mydb
-API_ENDPOINT=https://api.example.com/v1 
