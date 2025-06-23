@@ -60,7 +60,30 @@ PATTERNS=(
     "secret.*['\"][0-9a-zA-Z]{32,45}['\"]"
     
     # AI Service Credentials
-    
+    "sk-[a-zA-Z0-9-_]{40,}"              # Main key
+    "sk-proj-[a-zA-Z0-9-_]{40,}"         # Project key
+    "sk-or-[a-zA-Z0-9-_]{40,}"           # Org key
+    "sk-st-[a-zA-Z0-9-_]{40,}"           # Subtoken
+    "[oO][pP][eE][nN][aA][iI]_api_key[\\s]*[=:][\\s]*[^\\s\\n\\r]{40,}"  # case-insensitive match
+
+    # Anthropic API Keys
+    "sk-ant-[a-zA-Z0-9-_]{40,}"
+    "sk-ant-api03-[a-zA-Z0-9-_]{40,}"
+
+    # Hugging Face Tokens
+    "hf_[a-zA-Z0-9-_]{40,}"
+    "huggingface[_-]api[_-]key[\\s]*[=:][\\s]*[^\\s\\n\\r]{40,}"
+
+    # Cohere, Stability, ElevenLabs, Replicate (more tolerant)
+    "[a-zA-Z_]*cohere[a-zA-Z_]*[\\s]*[=:][\\s]*[^\\s\\n\\r]{40,}"
+    "[a-zA-Z_]*stability[a-zA-Z_]*[\\s]*[=:][\\s]*[^\\s\\n\\r]{40,}"
+    "[a-zA-Z_]*elevenlabs[a-zA-Z_]*[\\s]*[=:][\\s]*[^\\s\\n\\r]{40,}"
+    "r8_[a-zA-Z0-9-_]{40,}"  # Replicate API key
+
+    # Generic secure value
+    "[a-zA-Z0-9_]*(_)?(token|key|secret)[\\s]*[=:][\\s]*[^\\s\\n\\r\"']{30,}"
+
+
     # OpenAI API Keys - More flexible patterns
     "sk-[a-zA-Z0-9]{20,}"
     "sk-proj-[a-zA-Z0-9]{20,}"
