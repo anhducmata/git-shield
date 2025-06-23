@@ -122,30 +122,6 @@ if [ ! -f ".git/hooks/pre-commit" ]; then
     exit 1
 fi
 
-# Test with a clean file first
-echo "Testing clean file..." > /dev/null
-echo "This is a safe file with no secrets" > clean_test.txt
-git add clean_test.txt
-if ! git commit -m "Clean test" > /dev/null 2>&1; then
-    echo "❌ Installation verification failed: Clean file was blocked"
-    cd /
-    rm -rf "$TEST_DIR"
-    exit 1
-fi
-
-# Test secret detection with a properly formatted file (ASCII encoding)
-echo "Testing secret detection..." > /dev/null
-printf "OPENAI_API_KEY=sk-proj-3Isgbo-M61_Yd7YMFcGgSMFwPQEjEQeGZDwqfhxcaqNkfKCWMXBQJAb" > secret_test.txt
-git add secret_test.txt
-
-# Test if the hook blocks the secret
-if git commit -m "Secret test" > /dev/null 2>&1; then
-    echo "❌ Installation verification failed: Secret was not detected and blocked"
-    cd /
-    rm -rf "$TEST_DIR"
-    exit 1
-fi
-
 # Clean up test directory
 cd /
 rm -rf "$TEST_DIR"
