@@ -135,7 +135,7 @@ fi
 
 # Test secret detection with a properly formatted file (ASCII encoding)
 echo "Testing secret detection..." > /dev/null
-printf "OPENAI_API_KEY=test-key-1234567890abcdef1234567890abcdef1234567890abcdef\n" > secret_test.txt
+printf "OPENAI_API_KEY=sk-key-1234567890abcdef1234567890abcdef1234567890abcdef\n" > secret_test.txt
 git add secret_test.txt
 
 # Test if the hook blocks the secret
